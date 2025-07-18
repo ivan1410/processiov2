@@ -52,7 +52,7 @@ const mockProcesses = [
 
 export default function ProtectedPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{id: string; email: string} | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();

@@ -57,7 +57,7 @@ export default function BpmnPanel({ processId }: Props) {
   if (!xml) return <div className="h-[600px] flex items-center justify-center">Lade...</div>;
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col h-full space-y-2 min-h-0">
       <div className="flex items-center gap-2 h-9">
         {mode === 'view' ? (
           <Button size="sm" onClick={() => setMode('edit')}>
@@ -83,7 +83,7 @@ export default function BpmnPanel({ processId }: Props) {
         {status === 'saved' && <span className="flex items-center text-xs text-green-600"><CheckCircle size={14} className="mr-1" /> Gespeichert</span>}
         {status === 'error' && <span className="flex items-center text-xs text-destructive"><AlertTriangle size={14} className="mr-1" /> Fehler</span>}
       </div>
-      <div className="h-[600px] w-full border rounded-md">
+      <div className="h-[calc(100vh-12rem)] w-full border rounded-md overflow-hidden">
         {mode === 'view' ? (
           <BpmnViewer xml={xml} />
         ) : (

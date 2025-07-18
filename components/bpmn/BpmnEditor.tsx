@@ -37,7 +37,6 @@ const BpmnEditor = forwardRef<BpmnEditorHandle, BpmnEditorProps>(({ xml }, ref) 
         await modelerRef.current.importXML(xml.trim());
         modelerRef.current.get('canvas').zoom('fit-viewport');
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Modeler import failed', err);
       }
     })();
@@ -45,8 +44,9 @@ const BpmnEditor = forwardRef<BpmnEditorHandle, BpmnEditorProps>(({ xml }, ref) 
     return () => {
       modelerRef.current?.destroy();
       // Ensure any DOM nodes added by the previous modeler (palette, overlays, etc.) are removed
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      const container = containerRef.current;
+      if (container) {
+        container.innerHTML = '';
       }
       modelerRef.current = null;
     };

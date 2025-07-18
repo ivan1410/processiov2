@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export default function NewProcessPage() {
   const router = useRouter();
+  console.log('Router initialized for new process page', router);
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [isRecording, setIsRecording] = useState(false);
