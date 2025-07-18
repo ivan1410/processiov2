@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { Search, Grid3X3, List, Plus, FileText, Clock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,15 +50,38 @@ const mockProcesses = [
   }
 ];
 
-export default async function ProtectedPage() {
-  const supabase = await createClient();
+export default function ProtectedPage() {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
 
-  const { data, error } = await supabase.auth.getClaims();
-  if (error || !data?.claims) {
-    redirect("/auth/login");
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data, error } = await supabase.auth.getClaims();
+      if (error || !data?.claims) {
+        router.push("/auth/login");
+        return;
+      }
+      setUser(data.claims);
+      setLoading(false);
+    };
+    
+    checkUser();
+  }, [router, supabase]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  const user = data.claims;
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="flex-1 w-full flex flex-col gap-8">
@@ -70,10 +96,12 @@ export default async function ProtectedPage() {
               Verwalten Sie Ihre Geschäftsprozesse effizient und übersichtlich
             </p>
           </div>
-          <Button className="flex items-center gap-2">
-            <Plus size={16} />
-            Neuer Prozess
-          </Button>
+          <Link href="/protected/process/new">
+            <Button className="flex items-center gap-2">
+              <Plus size={16} />
+              Neuer Prozess
+            </Button>
+          </Link>
         </div>
 
         {/* Search and View Toggle */}
@@ -86,60 +114,121 @@ export default async function ProtectedPage() {
             />
           </div>
           <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-            <Button variant="ghost" size="sm" className="bg-background shadow-sm">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={viewMode === 'grid' ? 'bg-background shadow-sm' : ''}
+              onClick={() => setViewMode('grid')}
+            >
               <Grid3X3 size={16} />
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className={viewMode === 'list' ? 'bg-background shadow-sm' : ''}
+              onClick={() => setViewMode('list')}
+            >
               <List size={16} />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Process Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockProcesses.map((process) => (
-          <Link key={process.id} href={`/protected/process/${process.id}`}>
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileText size={20} className="text-primary" />
-                    <CardTitle className="text-lg">{process.title}</CardTitle>
-                  </div>
-                  <Badge 
-                    variant={process.status === 'Aktiv' ? 'default' : 
-                            process.status === 'In Bearbeitung' ? 'secondary' : 'outline'}
-                  >
-                    {process.status}
-                  </Badge>
-                </div>
-                <CardDescription className="text-sm">
-                  {process.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {process.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <User size={12} />
-                    {process.author}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock size={12} />
-                    {process.lastUpdated}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+      {/* Process Display - Only this section changes with view mode */}
+      <div className="w-full">
+        {viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {mockProcesses.map((process) => (
+              <Link key={process.id} href={`/protected/process/${process.id}`}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileText size={20} className="text-primary" />
+                        <CardTitle className="text-lg">{process.title}</CardTitle>
+                      </div>
+                      <Badge 
+                        variant={process.status === 'Aktiv' ? 'default' : 
+                                process.status === 'In Bearbeitung' ? 'secondary' : 'outline'}
+                      >
+                        {process.status}
+                      </Badge>
+                    </div>
+                    <CardDescription className="text-sm">
+                      {process.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {process.tags.map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <User size={12} />
+                        {process.author}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock size={12} />
+                        {process.lastUpdated}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {mockProcesses.map((process) => (
+              <Link key={process.id} href={`/protected/process/${process.id}`}>
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <FileText size={24} className="text-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-1">
+                            <CardTitle className="text-lg truncate">{process.title}</CardTitle>
+                            <Badge 
+                              variant={process.status === 'Aktiv' ? 'default' : 
+                                      process.status === 'In Bearbeitung' ? 'secondary' : 'outline'}
+                            >
+                              {process.status}
+                            </Badge>
+                          </div>
+                          <CardDescription className="text-sm mb-2">
+                            {process.description}
+                          </CardDescription>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {process.tags.map((tag) => (
+                              <Badge key={tag} variant="outline" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end text-xs text-muted-foreground gap-1 ml-4">
+                        <div className="flex items-center gap-1">
+                          <User size={12} />
+                          {process.author}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock size={12} />
+                          {process.lastUpdated}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Empty State (when no processes) */}
