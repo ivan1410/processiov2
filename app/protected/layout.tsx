@@ -22,6 +22,7 @@ export default function ProtectedLayout({
             <div className="absolute left-1/2 -translate-x-1/2 flex gap-5 items-center font-medium">
               <Link href="/">Home</Link>
               <Link href="/protected">Dashboard</Link>
+              <Link href="/faq">FAQ</Link>
             </div>
             <div className="flex items-center gap-4">
               {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}

@@ -20,6 +20,7 @@ export default function Home() {
           <div className="absolute left-1/2 -translate-x-1/2 flex gap-6 items-center font-medium">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <Link href="/protected" className="hover:text-primary transition-colors">Dashboard</Link>
+            <Link href="/faq" className="hover:text-primary transition-colors">FAQ</Link>
           </div>
           {!hasEnvVars ? <EnvVarWarning /> : <AuthButton />}
         </div>
@@ -280,8 +281,8 @@ export default function Home() {
             <Button size="lg" className="text-lg px-8 py-6">
               Kostenlos starten
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-              Mehr erfahren
+            <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6">
+              <Link href="/faq">Häufige Fragen</Link>
             </Button>
           </div>
         </div>
