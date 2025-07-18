@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, Users, FileText, Zap, BarChart3, Shield, Lightbulb } from "lucide-react";
+import { CheckCircle, Clock, Users, FileText, Zap, BarChart3, Shield } from "lucide-react";
 
 export default function Home() {
   return (
@@ -59,7 +59,7 @@ export default function Home() {
       {/* How it works */}
       <section className="w-full py-16 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">So einfach funktioniert's</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">So einfach funktioniert&apos;s</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Card className="text-center">
               <CardHeader>

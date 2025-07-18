@@ -22,8 +22,8 @@ export default function ViewerSection({ processId }: ViewerSectionProps) {
         const raw = await res.text();
         const cleaned = raw.replace(/^\uFEFF/, '').trim();
         setXml(cleaned);
-      } catch (err: any) {
-        setError(err.message ?? 'Fehler beim Laden');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Fehler beim Laden');
       }
     }
     fetchXml();

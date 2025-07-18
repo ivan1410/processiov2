@@ -21,6 +21,7 @@ export async function GET(
 ) {
   // TODO: fetch XML for params.id from database or storage
   // For now return sampleXml for every id
+  console.log('Fetching BPMN for process ID:', params.id);
   return new NextResponse(sampleXml, {
     status: 200,
     headers: {

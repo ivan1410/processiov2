@@ -34,7 +34,7 @@ export default function BpmnViewer({ xml }: BpmnViewerProps) {
     // Run only in the browser
     if (!containerRef.current) return;
 
-    let viewer: any;
+    let viewer: import('bpmn-js/dist/bpmn-viewer.development.js').default | null = null;
 
     (async () => {
       const { default: BpmnJS } = await import(
@@ -80,7 +80,7 @@ export default function BpmnViewer({ xml }: BpmnViewerProps) {
         viewer.destroy();
       }
     };
-  }, []);
+  }, [xml]);
 
   return <div className="h-full w-full" ref={containerRef} />;
 }

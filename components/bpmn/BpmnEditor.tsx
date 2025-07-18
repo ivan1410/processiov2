@@ -14,7 +14,7 @@ export interface BpmnEditorHandle {
 
 const BpmnEditor = forwardRef<BpmnEditorHandle, BpmnEditorProps>(({ xml }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const modelerRef = useRef<any>(null);
+  const modelerRef = useRef<import('bpmn-js/lib/Modeler').default | null>(null);
 
   useImperativeHandle(ref, () => ({
     async save() {
